@@ -4,14 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 public class WikiPhilosophy {
+    private final static String WIKI_BASE_URL = "https://en.wikipedia.org";
 
     final static List<String> visited = new ArrayList<String>();
     final static WikiFetcher wf = new WikiFetcher();
@@ -44,7 +41,13 @@ public class WikiPhilosophy {
      * @throws IOException
      */
     public static void testConjecture(String destination, String source, int limit) throws IOException {
-        if (limit < 0) {
+        if (visited.contains(source)) {
+            System.err.println("We are in loop!");
+            return ;
+        }
+        visited.add(source);
+
+        if (limit < 1) {
             return ;
         }
 
@@ -57,16 +60,16 @@ public class WikiPhilosophy {
         WikiParser wp = new WikiParser(elements);
 
         Element firstLink = wp.findFirstLink();
-        System.out.println("firstLink.html() = " + firstLink.html());
+        System.out.println("First valid link in current page: " + firstLink.html());
 
         String[] ss = firstLink.toString().split(" ");
-        StringBuilder url = new StringBuilder("https://en.wikipedia.org");
+        StringBuilder url = new StringBuilder(WIKI_BASE_URL);
         for (String s : ss) {
             if (s.startsWith("href=\"")) {
                 url.append(s.substring(6, s.length() - 1));
             }
         }
 
-        testConjecture(destination, url.toString(), limit--);
+        testConjecture(destination, url.toString(), limit - 1);
     }
 }
