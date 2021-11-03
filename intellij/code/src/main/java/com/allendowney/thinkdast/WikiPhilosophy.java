@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 public class WikiPhilosophy {
@@ -40,6 +44,29 @@ public class WikiPhilosophy {
      * @throws IOException
      */
     public static void testConjecture(String destination, String source, int limit) throws IOException {
-        // TODO: FILL THIS IN!
+        if (limit < 0) {
+            return ;
+        }
+
+        if (source.equals(destination)) {
+            System.out.println("Success!");
+            return ;
+        }
+
+        Elements elements = wf.fetchWikipedia(source);
+        WikiParser wp = new WikiParser(elements);
+
+        Element firstLink = wp.findFirstLink();
+        System.out.println("firstLink.html() = " + firstLink.html());
+
+        String[] ss = firstLink.toString().split(" ");
+        StringBuilder url = new StringBuilder("https://en.wikipedia.org");
+        for (String s : ss) {
+            if (s.startsWith("href=\"")) {
+                url.append(s.substring(6, s.length() - 1));
+            }
+        }
+
+        testConjecture(destination, url.toString(), limit--);
     }
 }
