@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
@@ -37,7 +38,10 @@ public class TermCounter {
 	 */
 	public int size() {
 		// TODO: FILL THIS IN!
-		return 0;
+		AtomicReference<Integer> totalCount = new AtomicReference<>(0);
+		map.forEach((s, i) -> totalCount.updateAndGet(v -> v + i));
+
+		return totalCount.get();
 	}
 
 	/**
